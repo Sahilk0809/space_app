@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => LikedPlanetsPage(),
+                  builder: (context) => const LikedPlanetsPage(),
                 ),
               );
             },

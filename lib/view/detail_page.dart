@@ -1,13 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'package:provider/provider.dart';
-
 import '../provider/space_provider.dart';
 
-class PlanetDetailPage extends StatelessWidget {
+class PlanetDetailPage extends StatefulWidget {
   final Map<String, dynamic> planet;
 
   const PlanetDetailPage({super.key, required this.planet});
+
+  @override
+  State<PlanetDetailPage> createState() => _PlanetDetailPageState();
+}
+
+class _PlanetDetailPageState extends State<PlanetDetailPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10), // Rotation duration
+    )..repeat(); // Repeats the animation indefinitely
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +38,20 @@ class PlanetDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(planet['name']!),
+        title: Text(widget.planet['name']!),
         backgroundColor: Colors.blueGrey,
         actions: [
           IconButton(
             icon: Icon(
-              spaceProvider.isLiked(planet) ? Icons.favorite : Icons.favorite_border,
-              color: spaceProvider.isLiked(planet) ? Colors.red : Colors.white,
+              spaceProvider.isLiked(widget.planet)
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: spaceProvider.isLiked(widget.planet)
+                  ? Colors.red
+                  : Colors.white,
             ),
             onPressed: () {
-              spaceProvider.toggleLike(planet);
+              spaceProvider.toggleLike(widget.planet);
             },
           ),
         ],
@@ -37,19 +63,27 @@ class PlanetDetailPage extends StatelessWidget {
           children: [
             SizedBox(
               height: 300,
-              child: Cube(
-                onSceneCreated: (scene) {
-                  scene.world.add(
-                    Object(
-                      fileName: 'assets/modals/${planet["model"]}',
-                      scale: Vector3(5, 5, 5), // Adjust scale if needed
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _controller.value * 2 * 3.1416, // Full rotation
+                    child: Cube(
+                      onSceneCreated: (scene) {
+                        scene.world.add(
+                          Object(
+                            fileName: 'assets/modals/${widget.planet["model"]}',
+                            scale: Vector3(5, 5, 5),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
               ),
             ),
             Text(
-              planet['name']!,
+              widget.planet['name']!,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 28,
@@ -58,7 +92,7 @@ class PlanetDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              planet['subtitle']!,
+              widget.planet['subtitle']!,
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 16,
@@ -66,7 +100,7 @@ class PlanetDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Surface area: ${planet['surface_area']!}',
+              'Surface area: ${widget.planet['surface_area']!}',
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 16,
@@ -74,7 +108,7 @@ class PlanetDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Gravity: ${planet['gravity']!}',
+              'Gravity: ${widget.planet['gravity']!}',
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 16,
@@ -83,7 +117,7 @@ class PlanetDetailPage extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: Text(
-                planet['description']!,
+                widget.planet['description']!,
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 16,

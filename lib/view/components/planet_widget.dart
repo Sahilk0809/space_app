@@ -3,10 +3,32 @@ import 'package:flutter_cube/flutter_cube.dart';
 
 import '../detail_page.dart';
 
-class PlanetCard extends StatelessWidget {
+class PlanetCard extends StatefulWidget {
   final Map<String, dynamic> planet;
 
   const PlanetCard({super.key, required this.planet});
+
+  @override
+  State<PlanetCard> createState() => _PlanetCardState();
+}
+
+class _PlanetCardState extends State<PlanetCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 8), // Rotation duration
+    )..repeat(); // Repeats the animation indefinitely
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +37,7 @@ class PlanetCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PlanetDetailPage(planet: planet),
+            builder: (_) => PlanetDetailPage(planet: widget.planet),
           ),
         );
       },
@@ -39,12 +61,20 @@ class PlanetCard extends StatelessWidget {
           children: [
             SizedBox(
               height: 250,
-              child: Cube(
-                onSceneCreated: (scene) {
-                  scene.world.add(
-                    Object(
-                      fileName: 'assets/modals/${planet["model"]}',
-                      scale: Vector3(5, 5, 5), // Adjust the scale
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _controller.value * 2 * 3.1416, // Full rotation
+                    child: Cube(
+                      onSceneCreated: (scene) {
+                        scene.world.add(
+                          Object(
+                            fileName: 'assets/modals/${widget.planet["model"]}',
+                            scale: Vector3(5, 5, 5), // Adjust the scale
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
@@ -52,7 +82,7 @@ class PlanetCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              planet['name']!,
+              widget.planet['name']!,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -63,7 +93,7 @@ class PlanetCard extends StatelessWidget {
               height: 80,
               child: Text(
                 textAlign: TextAlign.center,
-                planet['description']!,
+                widget.planet['description']!,
                 style: const TextStyle(
                   color: Colors.white,
                 ),

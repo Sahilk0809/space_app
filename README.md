@@ -11,4 +11,4 @@ A visually immersive Flutter app to explore the solar system. Features 3D intera
 
 
 ## 👇Video👇
-<a href="https://drive.google.com/file/d/1DH7ii3yqpKZAU6rPKZZ18OOhif4lNs1j/view?usp=sharing"> Video Link </a>
+<a href="https://drive.google.com/file/d/1u5TIR51wje8gdYKoYa1TnuAXWmSOkGHW/view?usp=sharing"> Video Link </a>
